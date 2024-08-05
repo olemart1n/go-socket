@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go socket</title>
+</head>
+
+<body style="background-color: rgb(161, 135, 105);">
+    <div class="center"></div>
+    <h1>Chat application</h1>
+    <h3 id="chat-header">Current in chat: general</h3>
+
+    <form action="" id="chatroom-selection">
+        <label for="chatroom">Chatroom:</label>
+        <input type="text" name="chatroom" id="chatroom"><br><br>
+        <input type="submit" value="Change chatroom">
+    </form>
+    <br>
+
+    <textarea name="messagearea" id="messagearea" readonly rows="4" cols="50"
+        placeholder="Welcome to chatroom"></textarea>
+
+    <form action="" id="chatroom-message">
+        <label for="message">Message:</label>
+        <input type="text" name="message" id="message">
+        <input type="submit" value="Send message">
+    </form>
+    <script src="./js.js"></script>
+</body>
+
+</html>
