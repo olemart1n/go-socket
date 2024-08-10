@@ -2,12 +2,13 @@ package main
 
 import (
 	// "fmt"
+	"context"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
-
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -16,6 +17,12 @@ var (
 		ReadBufferSize: 1024,
 		WriteBufferSize: 1024,
 		CheckOrigin: func(r *http.Request) bool {
+
+			origin := r.Header.Get("Origin")
+			switch origin {
+			case "http://127.0.0.1:5500":
+				
+			}
 			return true
 		},
 	}
@@ -25,14 +32,15 @@ var (
 type Manager struct {
 	clients ClientList
 	sync.RWMutex
-
+	otps RetentionMap
 	handlers map[string]EventHandler
 }
 
-func NewManager() *Manager {
+func NewManager(ctx context.Context) *Manager {
 	m := &Manager{
 		clients: make(ClientList),
 		handlers: make(map[string]EventHandler),
+		otps: NewRetentionMap(ctx, 5*time.Second),
 	}
 
 	m.setupEventHandlers()

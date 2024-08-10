@@ -1,12 +1,8 @@
 const chatroomForm = document.querySelector("#chatroom-selection");
 const messageForm = document.querySelector("#chatroom-message");
-const socket = new WebSocket("ws://" + "localhost:8080" + "/ws");
+const loginForm = document.querySelector("#login-form");
+const connectionStatus = document.querySelector("#connection-status");
 
-socket.addEventListener("message", (e) => {
-    const eventData = JSON.parse(e.data);
-    const event = Object.assign(new Event(), eventData);
-    routeEvent(event);
-});
 chatroomForm.addEventListener("submit", (e) => {
     e.preventDefault();
     changeChatroom();
@@ -55,4 +51,38 @@ function routeEvent(e) {
 function sendEvent(eName, payload) {
     const event = new Event(eName, payload);
     socket.send(JSON.stringify(event));
+}
+
+loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    console.log(data);
+
+    const res = await fetch("login", {
+        method: "POST",
+        body: JSON.stringify(data),
+        mode: "cors",
+    });
+    console.log(res.ok);
+    if (!res.ok) {
+        alert("unauthorized");
+    }
+    const json = await res.json();
+    connectWebsocket();
+});
+
+function connectWebsocket(otp) {
+    const socket = new WebSocket("ws://" + "localhost:8080" + "/ws?otp=", otp);
+
+    socket.addEventListener("open", () => {
+        connectionStatus.innerHTML = "Connected to websocket: True";
+    });
+    socket.addEventListener("close", () => {
+        connectionStatus.innerHTML = "Connected to websocket: false";
+    });
+    socket.addEventListener("message", (e) => {
+        const eventData = JSON.parse(e.data);
+        const event = Object.assign(new Event(), eventData);
+        routeEvent(event);
+    });
 }

@@ -11,6 +11,7 @@
     <div class="center"></div>
     <h1>Chat application</h1>
     <h3 id="chat-header">Current in chat: general</h3>
+    <div id="connection-status">Connected to websocket: false</div>
 
     <form action="" id="chatroom-selection">
         <label for="chatroom">Chatroom:</label>
@@ -27,7 +28,47 @@
         <input type="text" name="message" id="message">
         <input type="submit" value="Send message">
     </form>
+
+
+    <div id="login-div">
+        <form action="" id="login-form">
+            <div>
+                <label for="username">username:</label>
+                <input type="text" name="username" id="username"><br />
+                <label for="passoword">passoword:</label>
+                <input type="text" name="passoword" id="passowrd">
+            </div>
+            <button type="submit">Login</button>
+        </form>
+    </div>
     <script src="./js.js"></script>
 </body>
+
+<style>
+    body {
+        font-family: Tahoma, sans-serif;
+    }
+
+    input {
+        background-color: azure;
+        border: 3px solid blanchedalmond;
+
+
+    }
+
+    #login-form {
+        margin: 1rem;
+
+    }
+
+    #login-form button {
+
+        margin: auto;
+    }
+
+    #connection-status {
+        font-size: 1.5rem;
+    }
+</style>
 
 </html>
