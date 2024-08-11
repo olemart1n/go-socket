@@ -3,16 +3,6 @@ const messageForm = document.querySelector("#chatroom-message");
 const loginForm = document.querySelector("#login-form");
 const connectionStatus = document.querySelector("#connection-status");
 
-chatroomForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    changeChatroom();
-});
-messageForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    sendMessage();
-});
-
 class Event {
     constructor(type, payload) {
         this.type = type;
@@ -28,9 +18,9 @@ function changeChatroom() {
     return false;
 }
 
-function sendMessage() {
+function sendMessage(socket) {
     const newMessage = document.querySelector("#message");
-    sendEvent("send_message", newMessage.value);
+    sendEvent("send_message", newMessage.value, socket);
 }
 
 function routeEvent(e) {
@@ -48,7 +38,7 @@ function routeEvent(e) {
     }
 }
 
-function sendEvent(eName, payload) {
+function sendEvent(eName, payload, socket) {
     const event = new Event(eName, payload);
     socket.send(JSON.stringify(event));
 }
@@ -91,5 +81,14 @@ function connectWebsocket(otp) {
         const eventData = JSON.parse(e.data);
         const event = Object.assign(new Event(), eventData);
         routeEvent(event);
+    });
+
+    chatroomForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        changeChatroom();
+    });
+    messageForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        sendMessage(socket);
     });
 }
