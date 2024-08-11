@@ -56,23 +56,28 @@ function sendEvent(eName, payload) {
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.target));
-    console.log(data);
 
-    const res = await fetch("login", {
+    const res = await fetch("/login", {
         method: "POST",
         body: JSON.stringify(data),
         mode: "cors",
     });
-    console.log(res.ok);
     if (!res.ok) {
         alert("unauthorized");
+        return;
     }
-    const json = await res.json();
-    connectWebsocket();
+    try {
+        const json = await res.json();
+        console.log(json);
+        connectWebsocket(json.OTP);
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 function connectWebsocket(otp) {
-    const socket = new WebSocket("ws://" + "localhost:8080" + "/ws?otp=", otp);
+    console.log(otp);
+    const socket = new WebSocket("ws://" + "localhost:8080" + "/ws?otp=" + otp);
 
     socket.addEventListener("open", () => {
         connectionStatus.innerHTML = "Connected to websocket: True";

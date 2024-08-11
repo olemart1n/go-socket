@@ -3,6 +3,7 @@ package main
 import (
 	// "fmt"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -18,13 +19,14 @@ var (
 		WriteBufferSize: 1024,
 		CheckOrigin: func(r *http.Request) bool {
 
-			origin := r.Header.Get("Origin")
-			switch origin {
-			case "http://127.0.0.1:5500":
+		// 	origin := r.Header.Get("Origin")
+		// 	switch origin {
+		// 	case "http://127.0.0.1:5500":
 				
-			}
+		// 	}
 			return true
 		},
+		
 	}
 
 )
@@ -34,6 +36,43 @@ type Manager struct {
 	sync.RWMutex
 	otps RetentionMap
 	handlers map[string]EventHandler
+}
+
+func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
+	type userLoginRequest struct {
+		Username string `json: "username"` 
+		Password string `json: "password"`
+	}
+	
+
+	var req userLoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	
+	if req.Username == "percy" && req.Password == "123" {
+		type response struct {
+			OTP string `json: "otp"`
+		}
+		otp := m.otps.NewOTP()
+
+		res := response{
+			OTP: otp.Key,
+		}
+		data, err := json.Marshal(res)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
+		return
+	}
+
+	w.WriteHeader(401)
+	// w.WriteHeader(http.StatusUnauthorized)
 }
 
 func NewManager(ctx context.Context) *Manager {
@@ -68,7 +107,22 @@ func (m *Manager) routeEvent(event Event, c *Client) error {
 }
 
 func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request){
+
+	otp := r.URL.Query().Get("otp")
+	if otp == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		log.Println(r.URL.RawQuery)
+		return
+	}
+
+	if !m.otps.VerifyOTP(otp) {
+		w.WriteHeader(http.StatusUnauthorized)
+		
+		return
+	}
 	log.Println("new connection")
+
+	// if the code below executes, the user has a valid ticket(credentials)
 	// updgrade regular http connection into websocket
 	 conn, err := websocketUpgrader.Upgrade(w, r, nil)
 
