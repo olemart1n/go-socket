@@ -23,4 +23,5 @@ go.work.sum
 
 # env file
 .env
-example.com
+example.com+4-key.pem
+example.com+4.pem
