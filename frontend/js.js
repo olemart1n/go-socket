@@ -76,8 +76,10 @@ loginForm.addEventListener("submit", async (e) => {
 });
 
 function connectWebsocket(otp) {
-    console.log(otp);
-    const socket = new WebSocket("ws://" + "localhost:8080" + "/ws?otp=" + otp);
+    // IN PRODUCTION THE SOCKET PROTOCOL SHOULD BE SECURE (WSS)
+    console.log(document.location.host);
+    console.log(window.location.hostname);
+    const socket = new WebSocket("wss://" + document.location.host + "/ws?otp=" + otp);
 
     socket.addEventListener("open", () => {
         connectionStatus.innerHTML = "Connected to websocket: True";

@@ -9,7 +9,9 @@ import (
 func main () {
 	setupAPI()
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	// log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServeTLS(":8443", "example.com+4.pem", "example.com+4-key.pem", nil))
+	
 }
 
 func setupAPI () {
