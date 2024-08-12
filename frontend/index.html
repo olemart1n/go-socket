@@ -20,13 +20,13 @@
     </form>
     <br>
 
-    <textarea name="messagearea" id="messagearea" readonly rows="4" cols="50"
+    <textarea name="messagearea" id="message-area" readonly rows="4" cols="50"
         placeholder="Welcome to chatroom"></textarea>
 
-    <form action="" id="chatroom-message">
+    <form id="chatroom-message">
         <label for="message">Message:</label>
-        <input type="text" name="message" id="message">
-        <input type="submit" value="Send message">
+        <input type="text" name="message">
+        <button type="submit">Send message</button>
     </form>
 
 
@@ -41,7 +41,8 @@
             <button type="submit">Login</button>
         </form>
     </div>
-    <script src="./js.js"></script>
+
+    <script src="./js/index.js" type="module"></script>
 </body>
 
 <style>

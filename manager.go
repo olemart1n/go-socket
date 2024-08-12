@@ -90,8 +90,31 @@ func (m *Manager) setupEventHandlers() {
 	m.handlers[EventSendMessage] = SendMessage
 }
 
+
 func SendMessage(event Event, c *Client) error {
-	fmt.Println(event)
+	var chatevent SendMessageEvent
+
+	if err := json.Unmarshal(event.Payload, &chatevent); err != nil {
+		return fmt.Errorf("Bad payload in request: %v", err)
+	}
+	var broadMessage NewMessageEvent
+
+	broadMessage.Sent = time.Now()
+	broadMessage.Message = chatevent.Message
+	broadMessage.From = chatevent.From
+
+	data, err := json.Marshal(broadMessage)
+	if err != nil {
+		return fmt.Errorf("failed to marshal broadcast message: %v", err)
+	}
+	outgoingEvent := Event{
+		Payload: data,
+		Type: EventNewMessage,
+	}
+
+	for client := range c.manager.clients {
+		client.egress <- outgoingEvent
+	}
 	return nil
 }
 
